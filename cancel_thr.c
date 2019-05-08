@@ -11,7 +11,7 @@ It *should* be EAGAIN (fixed in 2.6).
 */
 /*
    cc -o cancellation cancellation.c -L. -R. -g -lpthread -lthread -lthread_extensions -lposix4
-    gcc -o cancellation cancel_thr.c -L. -R. -g -lpthread  
+   gcc -o cancellation cancel_thr.c -L. -R. -g -lpthread  
    */
 #define _POSIX_C_SOURCE 199506L
 #include <stdio.h>
@@ -38,7 +38,7 @@ pthread_cond_t wait_cv = PTHREAD_COND_INITIALIZER;
 int answer; /* Protected by death_lock */
 void count_tries(int i) /* Note the encapsulation */
 {
-	static int count=0, old_count=0, max_count = 0;
+    static int count=0, old_count=0, max_count = 0;
     static pthread_mutex_t count_lock = PTHREAD_MUTEX_INITIALIZER;
     pthread_mutex_lock(&count_lock);
     count += i;
@@ -50,7 +50,7 @@ void count_tries(int i) /* Note the encapsulation */
 }
 void cleanup_count(void *arg)
 {
-	int *ip = (int *) arg;
+    int *ip = (int *) arg;
     int i = *ip;
     pthread_t tid = pthread_self();
     char *name = thread_name(tid);
@@ -60,7 +60,7 @@ void cleanup_count(void *arg)
 }
 void cleanup_lock(void *arg)
 {
-	pthread_t tid = pthread_self();
+    pthread_t tid = pthread_self();
     char *name = thread_name(tid);
     printf("Freeing & releasing: %s\n", name);
     free(arg);
@@ -68,7 +68,7 @@ void cleanup_lock(void *arg)
 }
 void *search(void *arg)
 {
-	char *p;
+    char *p;
     unsigned int seed;
     int i=0, j, err, guess, target = (int) arg;
     pthread_t tid = pthread_self();
@@ -79,15 +79,15 @@ void *search(void *arg)
     pthread_cleanup_push(cleanup_count, (void *) &i); /* Q: Why &i ? */
     while (1)
     {
-		i++;
+        i++;
         /* Extra stuff to make it more realistic and complex. */
         pthread_mutex_lock(&rand_lock);
         p = (char *) malloc(10); /* Must free this up! */
 
-       /* Q: What if you allow cancellation here? */
+        /* Q: What if you allow cancellation here? */
         pthread_cleanup_push(cleanup_lock, (void *) p); /* 4 */
         guess = rand_r(&seed) % 10;
-printf("guess = [%d], name = [%s].\n", guess, name);
+        printf("guess = [%d], name = [%s].\n", guess, name);
         sleep(1);
         pthread_testcancel(); /* 5 */
         pthread_cleanup_pop(0);
@@ -97,13 +97,13 @@ printf("guess = [%d], name = [%s].\n", guess, name);
         sleep(1);
         if (target == guess)
         {
-			printf("%s found the number on try %d!\n", name, i); /* 7 */
+            printf("%s found the number on try %d!\n", name, i); /* 7 */
             /* I could also simply do sem_wait() & let cancellation work */
             while (((err = sem_trywait(&death_lock)) == -1) /* 1 */
                     && (errno == EINTR)) ;
             if ((err == -1) && (errno == EAGAIN))
             {
-				printf("%s Exiting...\n", name);
+                printf("%s Exiting...\n", name);
                 pthread_exit(NULL); /* 3 */
             }
             count_tries(i);
@@ -124,7 +124,7 @@ printf("guess = [%d], name = [%s].\n", guess, name);
 }
 start_searches()
 {
-	int i, pid, n_cancelled=0, status;
+    int i, pid, n_cancelled=0, status;
     int* piStatus;
     pthread_t tid;
     pid = getpid();
@@ -141,9 +141,9 @@ start_searches()
 
     for (i=0;i<NUM_THREADS;i++)
     {
-		pthread_mutex_lock(&threads_lock);
+        pthread_mutex_lock(&threads_lock);
         tid = threads[i]; /* Actually a constant now */
-	    pthread_mutex_unlock(&threads_lock);/* Q: Why like this? */
+        pthread_mutex_unlock(&threads_lock);/* Q: Why like this? */
         printf("i = [%d]---- join [%x].----\n", i, tid);
         //iRet = pthread_join(tid, (void **) &status); /* 9 */
         pthread_join(tid, (void **) &piStatus); /* 9 */
@@ -157,7 +157,7 @@ start_searches()
 }
 main()
 { 
-	int i;
+    int i;
     pthread_attr_init(&attr);
     pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);

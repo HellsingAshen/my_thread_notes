@@ -138,21 +138,21 @@ main()
     printf("Time Thread \t Event\n");
     printf("==== ====== \t =====\n");
     printf("[%2d] Main: \t Started [%s]\n", time1(),
-    thread_name(main_thr));
+            thread_name(main_thr));
     pthread_attr_init(&attr);
     pthread_attr_setscope(&attr, PTHREAD_SCOPE_SYSTEM);
     pthread_attr_setdetachstate(&attr, PTHREAD_CREATE_JOINABLE);
     sleep(1);
     pthread_create(&thr_a, &attr, sub_a, NULL);
     printf("[%2d] Main: \t Created thread A [%s]\n", time1(),
-        thread_name(thr_a));
+            thread_name(thr_a));
     sleep(1);
     pthread_create(&thr_c, &attr, sub_c, NULL);
     printf("[%2d] Main: \t Created thread C [%s]\n", time1(),
-        thread_name(thr_c));
+            thread_name(thr_c));
     sleep(2);
     printf("[%2d] Main: \t Cancelling thread D [%s]\n", time1(),
-        thread_name(thr_c));
+            thread_name(thr_c));
     pthread_cancel(thr_d);
     sleep(1);
     printf("[%2d] Main: \t Thread exiting...\n", time1());
